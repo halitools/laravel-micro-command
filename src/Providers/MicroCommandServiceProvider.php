@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Halitools\LaravelMicroCommand;
+namespace Halitools\LaravelMicroCommand\Providers;
 
 
 use GuzzleHttp\Client;
@@ -26,7 +26,8 @@ class MicroCommandServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/micro-command.php', 'micro-command');
+        $this->mergeConfigFrom(__DIR__ . '/../../config/micro-command.php', 'micro-command');
+
 
         $this->app->resolving(ExceptionResponseFactory::class, function(ExceptionResponseFactory $factory) {
             foreach (config('micro-command.exceptions', []) as $exceptionClass => $exceptionResponse) {
