@@ -1,0 +1,28 @@
+{
+  "name": "halitools/laravel-micro-command",
+  "description": "Send requests for not installed modules",
+  "keywords": ["requests", "microservices"],
+  "type": "project",
+  "require": {
+    "php": ">=7.1.0",
+    "halitools/micro-command": "*"
+  },
+  "suggest": {
+    "kamermans/guzzle-oauth2-subscriber": "Use oAuth to get access to the remote implementation"
+  },
+  "autoload": {
+    "psr-4": {
+      "Halitools\\LaravelMicroCommand\\": "src/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    },
+    "laravel": {
+      "providers": [
+        "Halitools\\LaravelMicroCommand\\MicroCommandServiceProvider"
+      ]
+    }
+  }
+}
