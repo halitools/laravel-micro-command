@@ -1,0 +1,12 @@
+<?php
+
+namespace DummyNamespace;
+
+use Halitools\MicroCommand\Request\LocalMicroService;
+DummyUseInterface
+
+class DummyClass extends LocalMicroService implements DummyClassInterface
+{
+
+
+}
