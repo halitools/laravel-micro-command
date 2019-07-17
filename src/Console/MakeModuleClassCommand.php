@@ -42,16 +42,16 @@ class MakeModuleClassCommand extends GeneratorCommand
         return str_replace('DummyUseInterface', $dummyUseInterface, parent::buildClass($name));
     }
 
-
     /**
-     * Get the root namespace for the class.
-     *
-     * @return string
-     */
+ * Get the root namespace for the class.
+ *
+ * @return string
+ */
     protected function rootNamespace()
     {
-        return $this->getConfig()['namespace'] ?? '';
+        return $this->getConfig()['namespace'] ?? $this->laravel->getNamespace();
     }
+
     /**
      * Get the stub file for the generator.
      *
@@ -60,11 +60,6 @@ class MakeModuleClassCommand extends GeneratorCommand
     protected function getStub()
     {
         return __DIR__ . '/stubs/'. $this->option('type') .'_microservice.stub';
-    }
-
-    protected function getDefaultNamespace($rootNamespace)
-    {
-        return $rootNamespace;
     }
 
     protected function getNameInput()

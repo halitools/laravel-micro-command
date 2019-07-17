@@ -95,7 +95,7 @@ class MicroCommandServiceProvider extends ServiceProvider
         if (!empty($clientConfig['config']) || !empty($clientConfig['oauth'])) {
             $guzzleOptions = $clientConfig['config'] ?? [];
             if ($clientConfig['oauth']) {
-                $oauth = $this->createOAuth($clientConfig);
+                $oauth = $this->createOAuth($clientConfig['oauth']);
                 $stack = HandlerStack::create();
                 $stack->push($oauth);
                 $guzzleOptions['auth'] = 'oauth';

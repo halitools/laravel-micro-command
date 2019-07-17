@@ -5,6 +5,7 @@ namespace Halitools\LaravelMicroCommand\Console;
 
 
 use Illuminate\Console\GeneratorCommand;
+use Illuminate\Support\Str;
 
 class MakeModuleInterfaceCommand extends GeneratorCommand
 {
@@ -25,15 +26,34 @@ class MakeModuleInterfaceCommand extends GeneratorCommand
         return __DIR__ . '/stubs/module_interface.stub';
     }
 
-    protected function getDefaultNamespace($rootNamespace)
+    /**
+     * Get the destination class path.
+     *
+     * @param  string  $name
+     * @return string
+     */
+    protected function getPath($name)
     {
-        return config('micro-command.generator.api.namespace');
+        $path = base_path(config('micro-command.generator.api.path'));
+        $name = Str::replaceFirst($this->rootNamespace(), '', $name);
+
+        return $path.'/'.str_replace('\\', '/', $name).'.php';
+    }
+
+    /**
+     * Get the root namespace for the class.
+     *
+* @return string
+*/
+    protected function rootNamespace()
+    {
+        return config('micro-command.generator.api.namespace', $this->laravel->getNamespace());
     }
 
     protected function buildClass($name)
     {
         $replace = [
-            'DummyModuleName' => $name
+            'DummyModuleName' => $this->argument('name')
         ];
         return str_replace(array_keys($replace), array_values($replace), parent::buildClass($name));
     }
