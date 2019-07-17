@@ -1,0 +1,14 @@
+<?php
+
+namespace DummyNamespace;
+
+/**
+ * Interface DummyClass
+ * @package DummyNamespace
+ */
+interface DummyClass
+{
+
+    const NAME = 'DummyModuleName';
+
+}

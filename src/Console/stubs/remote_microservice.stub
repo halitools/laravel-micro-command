@@ -1,0 +1,11 @@
+<?php
+
+namespace DummyNamespace;
+
+use Halitools\MicroCommand\Request\RemoteMicroService;
+
+class DummyClass extends RemoteMicroService implements DummyClassInterface
+{
+
+
+}

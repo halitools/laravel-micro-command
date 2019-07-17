@@ -1,21 +1,28 @@
 <?php
 
-use Halitools\LaravelMicroCommand\ExceptionResponses\ValidationExceptionResponse;
-use Illuminate\Validation\ValidationException;
-
 return [
 
-    'path' => 'app/Modules',
+    'generator' => [
+        'api' => [
+            'path' => 'app/Api/Modules',
+            'namespace' => 'App\Api\Modules',
+        ],
+        'module' => [
+            'path' => 'app/Modules',
+            'namespace' => 'App\Modules',
+        ],
+        'postfix' => 'Module'
+    ],
 
     'exceptions' => [
-        ValidationException::class => ValidationExceptionResponse::class
+        "\Illuminate\Validation\ValidationException" => "\Halitools\LaravelMicroCommand\ExceptionResponses\ValidationExceptionResponse"
     ],
 
-    'clients' => [
+    'servers' => [
 
     ],
 
-    'services' => [
+    'modules' => [
 
     ]
 ];

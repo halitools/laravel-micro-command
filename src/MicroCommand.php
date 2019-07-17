@@ -17,4 +17,9 @@ class MicroCommand
         });
     }
 
+    public function client()
+    {
+        
+    }
+
 }

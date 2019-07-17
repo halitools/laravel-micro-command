@@ -7,6 +7,9 @@ namespace Halitools\LaravelMicroCommand\Providers;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Uri;
+use Halitools\LaravelMicroCommand\Console\MakeModuleClassCommand;
+use Halitools\LaravelMicroCommand\Console\MakeModuleCommand;
+use Halitools\LaravelMicroCommand\Console\MakeModuleInterfaceCommand;
 use Halitools\LaravelMicroCommand\Exceptions\OauthException;
 use Halitools\MicroCommand\Request\MicroService;
 use Halitools\MicroCommand\Request\RemoteMicroService;
@@ -41,16 +44,16 @@ class MicroCommandServiceProvider extends ServiceProvider
             }
             /** @var MicroService $module */
             $name = $module->getName();
-            $serviceConfig = config('micro-command.services.' . $name);
+            $serviceConfig = config('micro-command.modules.' . $name);
             if (empty($serviceConfig)) {
                 return $module;
             }
             $this->setMicroServiceConfig($module, $serviceConfig);
 
-            if (empty($serviceConfig['client']) || !is_subclass_of($module, RemoteMicroService::class)) {
+            if (empty($serviceConfig['server']) || !is_subclass_of($module, RemoteMicroService::class)) {
                 return $module;
             }
-            $this->setClient($module, config('micro-command.clients.' . $serviceConfig['client'], []));
+            $this->setClient($module, config('micro-command.servers.' . $serviceConfig['server'], []));
             return $module;
         });
     }
@@ -62,8 +65,13 @@ class MicroCommandServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->commands([
+            MakeModuleCommand::class,
+            MakeModuleInterfaceCommand::class,
+            MakeModuleClassCommand::class
+        ]);
         $this->publishes([
-            __DIR__.'/../config/micro-command.php' => config_path('micro-command.php'),
+            __DIR__.'/../../config/micro-command.php' => config_path('micro-command.php'),
         ], 'config');
     }
 
@@ -112,7 +120,6 @@ class MicroCommandServiceProvider extends ServiceProvider
         $client = new Client([
             'base_uri' => $config['token_uri']
         ]);
-
 
         switch ($config['grant_type']) {
             case 'client_credentials':
