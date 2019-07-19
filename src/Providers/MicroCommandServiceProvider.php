@@ -5,19 +5,17 @@ namespace Halitools\LaravelMicroCommand\Providers;
 
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Uri;
 use Halitools\LaravelMicroCommand\Console\MakeModuleClassCommand;
 use Halitools\LaravelMicroCommand\Console\MakeModuleCommand;
 use Halitools\LaravelMicroCommand\Console\MakeModuleInterfaceCommand;
 use Halitools\LaravelMicroCommand\Exceptions\OauthException;
+use Halitools\LaravelMicroCommand\Helpers\GuzzleOptionsHelper;
 use Halitools\MicroCommand\Request\MicroService;
 use Halitools\MicroCommand\Request\RemoteMicroService;
 use Halitools\MicroCommand\Response\ExceptionResponseFactory;
 use Illuminate\Support\ServiceProvider;
-use kamermans\OAuth2\GrantType\ClientCredentials;
-use kamermans\OAuth2\GrantType\PasswordCredentials;
-use kamermans\OAuth2\OAuth2Middleware;
+
 
 class MicroCommandServiceProvider extends ServiceProvider
 {
@@ -92,41 +90,10 @@ class MicroCommandServiceProvider extends ServiceProvider
     private function setClient(RemoteMicroService $module, array $clientConfig)
     {
         $module->setUri(new Uri($clientConfig['uri'] ?? ''));
-        if (!empty($clientConfig['config']) || !empty($clientConfig['oauth'])) {
-            $guzzleOptions = $clientConfig['config'] ?? [];
-            if ($clientConfig['oauth']) {
-                $oauth = $this->createOAuth($clientConfig['oauth']);
-                $stack = HandlerStack::create();
-                $stack->push($oauth);
-                $guzzleOptions['auth'] = 'oauth';
-                $guzzleOptions['handler'] = $stack;
-            }
-
-            $module->setClient(app(Client::class, [$guzzleOptions]));
-
+        if (!empty($clientConfig['config']) || !empty($clientConfig['oauth']) || !empty($clientConfig['middleware'])) {
+            $guzzleOptionsHelper = new GuzzleOptionsHelper($clientConfig);
+            $client = app(Client::class, ['config' => $guzzleOptionsHelper->getOptions()]);
+            $module->setClient($client);
         }
-    }
-
-    /**
-     * @param array $config
-     * @return OAuth2Middleware
-     * @throws OauthException
-     */
-    private function createOAuth(array $config): OAuth2Middleware
-    {
-        if (empty($config['token_uri'])) {
-            throw new OauthException('token_uri must be configured for oauth');
-        }
-        $client = new Client([
-            'base_uri' => $config['token_uri']
-        ]);
-
-        switch ($config['grant_type']) {
-            case 'client_credentials':
-                return new OAuth2Middleware(new ClientCredentials($client, $config));
-            case 'password_credentials':
-                return new OAuth2Middleware(new PasswordCredentials($client, $config));
-        }
-        throw new OauthException('oAuth grant type not configured correctly');
     }
 }
