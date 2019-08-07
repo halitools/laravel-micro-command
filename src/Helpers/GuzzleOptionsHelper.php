@@ -10,6 +10,7 @@ use Halitools\LaravelMicroCommand\Exceptions\OauthException;
 use kamermans\OAuth2\GrantType\ClientCredentials;
 use kamermans\OAuth2\GrantType\PasswordCredentials;
 use kamermans\OAuth2\OAuth2Middleware;
+use kamermans\OAuth2\Persistence\FileTokenPersistence;
 
 class GuzzleOptionsHelper
 {
@@ -77,13 +78,23 @@ class GuzzleOptionsHelper
             'base_uri' => $config['token_uri']
         ]);
 
-        switch ($config['grant_type']) {
+        $oauth = null;
+        switch ($config['grant_type'] ?? '') {
             case 'client_credentials':
-                return new OAuth2Middleware(new ClientCredentials($client, $config));
+                $oauth = new OAuth2Middleware(new ClientCredentials($client, $config));
+                break;
             case 'password_credentials':
-                return new OAuth2Middleware(new PasswordCredentials($client, $config));
+                $oauth = new OAuth2Middleware(new PasswordCredentials($client, $config));
+                break;
         }
-        throw new OauthException('oAuth grant type not configured correctly');
-    }
+        if (is_null($oauth)) {
+            throw new OauthException('oAuth grant type not configured correctly');
+        }
 
+        if (!empty($config['cache'])) {
+            $tokenPersistence = new FileTokenPersistence($config['cache']);
+            $oauth->setTokenPersistence($tokenPersistence);
+        }
+        return $oauth;
+    }
 }
