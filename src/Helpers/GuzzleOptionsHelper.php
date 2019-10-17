@@ -74,9 +74,7 @@ class GuzzleOptionsHelper
         if (empty($config['token_uri'])) {
             throw new OauthException('token_uri must be configured for oauth');
         }
-        $client = new Client([
-            'base_uri' => $config['token_uri']
-        ]);
+        $client = app(Client::class, ['config' => ['base_uri' => $config['token_uri']]]);
 
         $oauth = null;
         switch ($config['grant_type'] ?? '') {
