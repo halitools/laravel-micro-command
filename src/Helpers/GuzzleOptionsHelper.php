@@ -11,6 +11,7 @@ use kamermans\OAuth2\GrantType\ClientCredentials;
 use kamermans\OAuth2\GrantType\PasswordCredentials;
 use kamermans\OAuth2\OAuth2Middleware;
 use kamermans\OAuth2\Persistence\FileTokenPersistence;
+use kamermans\OAuth2\Signer\ClientCredentials\PostFormData;
 
 class GuzzleOptionsHelper
 {
@@ -83,6 +84,7 @@ class GuzzleOptionsHelper
                 break;
             case 'password_credentials':
                 $oauth = new OAuth2Middleware(new PasswordCredentials($client, $config));
+                $oauth->setClientCredentialsSigner(new PostFormData());
                 break;
         }
         if (is_null($oauth)) {
